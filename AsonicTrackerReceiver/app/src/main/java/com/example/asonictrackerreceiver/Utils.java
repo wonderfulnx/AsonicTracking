@@ -12,6 +12,26 @@ public class Utils {
         return signal;
     }
 
+    public static double[] xcorr(double[] input, double[] target) {
+        double[] xcorr_result = new double[input.length];
+        for (int i = 0; i < input.length; ++i) {
+            xcorr_result[i] = 0;
+            for (int j = 0; j < target.length; ++j) {
+                xcorr_result[i] += input[i + j] * target[j];
+            }
+        }
+        return xcorr_result;
+    }
+
+    public static int findStart(double[] input, double[] target) {
+        double[] xcorr_result = xcorr(input, target);
+        for (int i = 0; i < xcorr_result.length; ++i) {
+            if (xcorr_result[i] > 10) {
+                return i;
+            }
+        }
+        return -1;
+
     public static double[] bytes2double(byte[] bytes, int length) {
         double[] doubles = new double[length / 2];
         for (int i = 0; i < doubles.length; i++) {
