@@ -32,6 +32,23 @@ public class FMCW {
         for (int i = sample_num; i < fft_len; i++)
             s[i] = new Complex(0, 0);
 
+        return cal_delta(s);
+    }
+
+    public double delta_dis(double[] input, int start) {
+        if (input.length - start < sample_num)
+            throw new RuntimeException("input data length wrong!");
+
+        Complex[] s = new Complex[fft_len];
+        for (int i = 0; i < fft_len && i < sample_num; i++)
+            s[i] = new Complex(pseudo_T[i] * input[start + i], 0);
+        for (int i = sample_num; i < fft_len; i++)
+            s[i] = new Complex(0, 0);
+
+        return cal_delta(s);
+    }
+
+    private double cal_delta(Complex[] s) {
         // 计算频率偏移
         Complex[] FFT_out = FFT.fft(s);
         double max_delta = 0;
