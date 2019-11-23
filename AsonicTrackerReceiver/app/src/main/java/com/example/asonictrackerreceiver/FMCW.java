@@ -6,7 +6,7 @@ public class FMCW {
     private int f0;
     private int f1;
     private int sample_num;
-    double[] pseudo_T;
+    private double[] pseudo_T;
     private int fft_len = 1024 * 64;
     private int c = 340;
 
@@ -17,7 +17,7 @@ public class FMCW {
         f1 = end_freq;
         sample_num = 1 + (int)(T * fs);
         double[] t = new double[sample_num];
-        for (int i = 0; i < sample_num; i++) t[i] = i * (1 / fs);
+        for (int i = 0; i < sample_num; i++) t[i] = i * ((double)1 / fs);
         pseudo_T = Utils.chirp(t, f0, T, f1);
     }
 
