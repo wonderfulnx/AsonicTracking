@@ -16,21 +16,26 @@ public class Utils {
         double[] xcorr_result = new double[input.length];
         for (int i = 0; i < input.length; ++i) {
             xcorr_result[i] = 0;
-            for (int j = 0; j < target.length; ++j) {
+            for (int j = 0; j < target.length && j < input.length - i; ++j) {
                 xcorr_result[i] += input[i + j] * target[j];
             }
         }
         return xcorr_result;
     }
 
-    public static int findStart(double[] input, double[] target) {
-        double[] xcorr_result = xcorr(input, target);
+    public static int findStart(double[] input) {
+        int sample_num = 1 + (int)(Config.T * Config.SamplingRate);
+        double[] t = new double[sample_num];
+        for (int i = 0; i < sample_num; i++) t[i] = i * ((double)1 / Config.SamplingRate);
+
+        double[] xcorr_result = xcorr(input, Utils.chirp(t, Config.StartFreq, Config.T, Config.EndFreq));
         for (int i = 0; i < xcorr_result.length; ++i) {
             if (xcorr_result[i] > 10) {
                 return i;
             }
         }
         return -1;
+    }
 
     public static double[] bytes2double(byte[] bytes, int length) {
         double[] doubles = new double[length / 2];

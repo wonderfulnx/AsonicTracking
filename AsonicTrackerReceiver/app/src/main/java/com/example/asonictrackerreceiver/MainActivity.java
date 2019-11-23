@@ -12,7 +12,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity implements CallBack{
+public class MainActivity extends AppCompatActivity implements CallBack {
     protected static final String TAG = "MainActivity";
     private Button start_btn;
     private EditText editText;
@@ -44,13 +44,16 @@ public class MainActivity extends AppCompatActivity implements CallBack{
                     } catch (InterruptedException e){
                         Log.e(TAG, "record thread Interrupted;");
                     }
+                    MainActivity.this.start_btn.setText("Start");
                 }
                 else {
                     this.recording = true;
 
                     // Start Recording
-                    recorder = new Recorder();
+                    recorder = new Recorder(MainActivity.this);
                     recorder.start();
+
+                    MainActivity.this.start_btn.setText("Stop");
                 }
             }
         });
