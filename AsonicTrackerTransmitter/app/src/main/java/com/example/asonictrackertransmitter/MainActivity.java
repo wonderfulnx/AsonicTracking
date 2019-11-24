@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText f0_edit;
     private EditText f1_edit;
     private EditText T_edit;
+    private EditText chirp_num_edit;
     private MediaPlayer mediaPlayer;
 
     @Override
@@ -60,18 +61,26 @@ public class MainActivity extends AppCompatActivity {
                         int f0 = Integer.parseInt(MainActivity.this.f0_edit.getText().toString());
                         int f1 = Integer.parseInt(MainActivity.this.f1_edit.getText().toString());
                         double T = Double.parseDouble(MainActivity.this.T_edit.getText().toString());
+                        int chirp_num = Integer.parseInt(MainActivity.this.chirp_num_edit.getText().toString());
 
                         // check input
                         if (fs < 10000 || fs > 48000) throw new Exception("Wrong input");
                         if (f0 > f1 || f1 > fs / 2) throw new Exception("Wrong input");
                         if (T < 0.01 || T > 3) throw new Exception("Wrong input");
+                        if (chirp_num <= 0 || chirp_num > 100) throw new Exception("Wrong input");
 
                         // generate sound
                         int sample_num = 1 + (int)(T * fs);
                         double[] t = new double[sample_num];
                         for (int i = 0; i < sample_num; i++) t[i] = i * ((double)1 / fs);
                         double[] chirp = Utils.chirp(t, f0, T, f1);
-                        Utils.writeMessage(chirp, fs);
+
+                        double[] message = new double[sample_num * 2 * chirp_num];
+                        for (int i = 0; i < chirp_num; i++) {
+                            for (int j = 0; j < sample_num; j++) message[i * 2 * sample_num + j] = chirp[j];
+                            for (int j = sample_num; j < 2 * sample_num; j++) message[i * 2 * sample_num + j] = 0;
+                        }
+                        Utils.writeMessage(message, fs);
 
                         playing = true;
 
@@ -100,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         this.f0_edit = this.findViewById(R.id.f0_edit);
         this.f1_edit = this.findViewById(R.id.f1_edit);
         this.T_edit = this.findViewById(R.id.T_edit);
+        this.chirp_num_edit = this.findViewById(R.id.chirp_num_edit);
     }
 
     @Override
