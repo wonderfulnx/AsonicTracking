@@ -4,8 +4,6 @@ package com.example.asonictrackerreceiver;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
-import android.telecom.Call;
 import android.util.Log;
 
 interface CallBack {
@@ -20,6 +18,8 @@ public class Recorder extends Thread {
     private AudioRecord audioRecord;
     private int bufferSize;
     private byte[] buffer;
+    private BandPassFilter bandPassFilter;
+    private FMCW fmcw;
     CallBack callBack;
 
     public boolean recording = false;
@@ -27,10 +27,12 @@ public class Recorder extends Thread {
     public Recorder(CallBack call_back) {
         super();
         bufferSize = AudioRecord.getMinBufferSize(SamplingRate, channelConfiguration, audioEncoding);
-//        bufferSize *= 10;
+        bufferSize *= 5;
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SamplingRate,
                 channelConfiguration, audioEncoding, bufferSize * 2);
         buffer = new byte[bufferSize];
+        bandPassFilter = new BandPassFilter(Config.BandPassCenter, Config.BandPassOffset, Config.SamplingRate);
+        fmcw = new FMCW(Config.SamplingRate, Config.T, Config.StartFreq, Config.EndFreq);
         callBack = call_back;
     }
 
@@ -45,21 +47,18 @@ public class Recorder extends Thread {
                 if (num_rec == AudioRecord.ERROR_INVALID_OPERATION || num_rec == AudioRecord.ERROR_BAD_VALUE)
                     continue;
                 if (num_rec != 0 && num_rec != -1) {
-                    double[] receive = Utils.bytes2double(buffer, num_rec);
-                    BandPassFilter bpass = new BandPassFilter(20000, 3000, Config.SamplingRate);
-                    receive = bpass.filter(receive);
+                    double[] audio = Utils.bytes2double(buffer, num_rec);
+                    double[] receive = bandPassFilter.filter(audio);
 
                     // process the received signal here
                     int start_pos = Utils.findStart(receive);
                     if (start_pos >= 0) {
-                        FMCW fmcw = new FMCW(Config.SamplingRate, Config.T, Config.StartFreq, Config.EndFreq);
                         while (start_pos + Config.SampleNum < receive.length) {
                             double dis = fmcw.delta_dis(receive, start_pos);
                             callBack.solve_distance(dis);
-                            start_pos += Config.SampleNum;
+                            start_pos += Config.SampleNum * 2;
                         }
                     }
-                    else callBack.solve_distance(0.);
                 }
             }
             audioRecord.stop();
