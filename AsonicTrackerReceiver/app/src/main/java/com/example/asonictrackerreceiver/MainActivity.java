@@ -83,15 +83,15 @@ public class MainActivity extends AppCompatActivity implements CallBack {
     @Override
     public void solve_distance(double dis) {
         // 计算结果结束后进行的callback
-        logToDisplay("Distance is: " + dis + "m");
+        logToDisplay(String.format("Distance is: %.3f m", dis));
     }
 
     private void logToDisplay(final String msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-//                MainActivity.this.editText.append(msg + "\n");
-                MainActivity.this.editText.setText(msg);
+                MainActivity.this.editText.append(msg + "\n");
+//                MainActivity.this.editText.setText(msg);
             }
         });
     }

@@ -7,8 +7,8 @@ public class FMCW {
     private int f1;
     private int sample_num;
     private double[] pseudo_T;
-    private int fft_len = 1024 * 64;
-    private int c = 340;
+    private int fft_len = Config.FMCW_FFTLen;
+    private int c = Config.SoundSpeed;
 
     public FMCW(int sample_freq, double chirp_T, int start_freq, int end_freq) {
         fs = sample_freq;

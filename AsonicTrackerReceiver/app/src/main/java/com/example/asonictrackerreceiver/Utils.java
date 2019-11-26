@@ -1,5 +1,7 @@
 package com.example.asonictrackerreceiver;
 
+import android.util.Log;
+
 public class Utils {
     public static double[] chirp(double[] t, int f0, double t1, int f1) {
         double t0 = t[0];
@@ -24,15 +26,19 @@ public class Utils {
     }
 
     public static int findStart(double[] input) {
-        int sample_num = 1 + (int)(Config.T * Config.SamplingRate);
-        double[] t = new double[sample_num];
-        for (int i = 0; i < sample_num; i++) t[i] = i * ((double)1 / Config.SamplingRate);
+        double[] t = new double[Config.SampleNum];
+        for (int i = 0; i < Config.SampleNum; i++) t[i] = ((double)i / Config.SamplingRate);
+        double[] chirp = Utils.chirp(t, Config.StartFreq, Config.T, Config.EndFreq);
 
-        double[] xcorr_result = xcorr(input, Utils.chirp(t, Config.StartFreq, Config.T, Config.EndFreq));
+        double[] xcorr_result = xcorr(input, chirp);
+
+        double max = 0;
+        for (double d: xcorr_result) if (d > max) max = d;
+
+        // Log.i("XCORR", String.format("max corr is: %.3f", max));
+        
         for (int i = 0; i < xcorr_result.length; ++i) {
-            if (xcorr_result[i] > 10) {
-                return i;
-            }
+            if (xcorr_result[i] > Config.StartThreshold) return i;
         }
         return -1;
     }
