@@ -60,6 +60,6 @@ public class FMCW {
                 max_ind = i;
             }
         }
-        return max_ind * c * T / (f1 - f0);
+        return max_ind * fs * c * T / (f1 - f0) / fft_len;
     }
 }

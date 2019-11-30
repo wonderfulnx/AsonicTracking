@@ -12,11 +12,20 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 public class MainActivity extends AppCompatActivity implements CallBack {
     protected static final String TAG = "MainActivity";
     private Button start_btn;
+    private Button clear_btn;
     private EditText editText;
     private Recorder recorder;
+
+    private GraphView graphView;
+    private LineGraphSeries<DataPoint> graphSeries;
+    private double curGraphX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +66,26 @@ public class MainActivity extends AppCompatActivity implements CallBack {
                 }
             }
         });
+
+        // graph view
+        graphSeries = new LineGraphSeries<>();
+        graphView = findViewById(R.id.graph);
+        graphView.getGridLabelRenderer().setPadding(64);
+        graphView.addSeries(graphSeries);
+        graphView.getViewport().setXAxisBoundsManual(true);
+        graphView.getViewport().setMinX(0);
+        graphView.getViewport().setMaxX(40);
+        curGraphX = 0;
+
+        clear_btn = findViewById(R.id.clear_btn);
+        clear_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.editText.setText("");
+                MainActivity.this.graphSeries.resetData(new DataPoint[]{});
+                curGraphX = 0;
+            }
+        });
     }
 
     @Override
@@ -83,7 +112,8 @@ public class MainActivity extends AppCompatActivity implements CallBack {
     @Override
     public void solve_distance(double dis) {
         // 计算结果结束后进行的callback
-        logToDisplay(String.format("Distance is: %.3f m", dis));
+        logToDisplay(String.format("Distance is: %.1f cm", dis * 100));
+        appendData(dis * 100);
     }
 
     private void logToDisplay(final String msg) {
@@ -91,7 +121,17 @@ public class MainActivity extends AppCompatActivity implements CallBack {
             @Override
             public void run() {
                 MainActivity.this.editText.append(msg + "\n");
-//                MainActivity.this.editText.setText(msg);
+                // MainActivity.this.editText.setText(msg);
+            }
+        });
+    }
+
+    private void appendData(final double y) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                curGraphX += 1;
+                MainActivity.this.graphSeries.appendData(new DataPoint(curGraphX, y), true, 40);
             }
         });
     }

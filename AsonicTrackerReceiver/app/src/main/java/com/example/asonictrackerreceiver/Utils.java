@@ -33,14 +33,15 @@ public class Utils {
         double[] xcorr_result = xcorr(input, chirp);
 
         double max = 0;
-        for (double d: xcorr_result) if (d > max) max = d;
+        int pos = -1;
+        for (int i = 0; i < xcorr_result.length; i++) if (xcorr_result[i] > max) {
+            max = xcorr_result[i];
+            pos = i;
+        }
 
         // Log.i("XCORR", String.format("max corr is: %.3f", max));
-        
-        for (int i = 0; i < xcorr_result.length; ++i) {
-            if (xcorr_result[i] > Config.StartThreshold) return i;
-        }
-        return -1;
+        if (max > Config.StartThreshold && pos >= 20) return pos - 20;
+        else return -1;
     }
 
     public static double[] bytes2double(byte[] bytes, int length) {
