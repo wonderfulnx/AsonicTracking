@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText f1_edit;
     private EditText T_edit;
     private EditText chirp_num_edit;
-    private MediaPlayer mediaPlayer;
+    private LoopPlayer loopPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // Stop playing
                     try {
-                        MainActivity.this.mediaPlayer.stop();
-                        MainActivity.this.mediaPlayer.reset();
-                        MainActivity.this.mediaPlayer.release();
+                        MainActivity.this.loopPlayer.stopRunning();
                     } catch (Exception e){
                         Log.e(TAG, "Error player: " + e.toString());
                     }
@@ -82,14 +80,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Utils.writeMessage(message, fs);
 
-                        playing = true;
-
                         // Start playing
-                        MainActivity.this.mediaPlayer = new MediaPlayer();
-                        MainActivity.this.mediaPlayer.setDataSource(Utils.messageFilePath);
-                        MainActivity.this.mediaPlayer.prepare();
-                        MainActivity.this.mediaPlayer.setLooping(true);
-                        MainActivity.this.mediaPlayer.start();
+                        // MainActivity.this.mediaPlayer = new MediaPlayer();
+                        // MainActivity.this.mediaPlayer.setDataSource(Utils.messageFilePath);
+                        // MainActivity.this.mediaPlayer.prepare();
+                        // MainActivity.this.mediaPlayer.setLooping(true);
+                        // MainActivity.this.mediaPlayer.start();
+                        loopPlayer = new LoopPlayer(fs, message);
+                        loopPlayer.start();
+                        playing = true;
 
                         MainActivity.this.play_btn.setText("Stop");
                     }
