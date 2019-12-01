@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentNavigableMap;
 
 interface CallBack {
     void solve_distance(double dis);
+    void solve_position(double x, double y);
 }
 
 public class Recorder extends Thread {
@@ -104,7 +105,24 @@ public class Recorder extends Thread {
                             double dis_b = fmcwB.delta_dis(receive_b, start_pos_b);
                             double x = (Config.SpeakerDist * Config.SpeakerDist + dis_a * dis_a - dis_b * dis_b) / (2 * Config.SpeakerDist);
                             double y = Math.sqrt(dis_a * dis_a - x * x);
+
+                            callBack.solve_position(x, y);
+
+                            start_pos_a += Config.SampleNum * 2;
+                            start_pos_b += Config.SampleNum * 2;
                         }
+
+                        while (start_pos_a + Config.SampleNum * 2 <= receive_a.length) {
+                            start_pos_a += Config.SampleNum * 2;
+                        }
+
+                        while (start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
+                            start_pos_b += Config.SampleNum * 2;
+                        }
+
+                        last_tail_a = receive_a.length - start_pos_a;
+                        last_tail_b = receive_b.length - start_pos_b;
+                        read_cnt++;
                     }
 
 //                    if (start_pos >= 0) {
