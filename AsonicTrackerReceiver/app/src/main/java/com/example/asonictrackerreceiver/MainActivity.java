@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements CallBack {
 
     @Override
     public void solve_position(double x, double y) {
-        logToDisplay(String.format("Position is: (%.3f, %3f) m", x, y));
+        logToDisplay(String.format("distance to a:%.3f, to b:%.3f m", x, y));
     }
 
     private void logToDisplay(final String msg) {

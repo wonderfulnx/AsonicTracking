@@ -66,7 +66,7 @@ public class Utils {
                 pos = i;
             }
         }
-        Log.i("XCORR", String.format("max corr is: %.3f, position is: %d", max, pos));
+//        Log.i("XCORR", String.format("max corr is: %.3f, position is: %d", max, pos));
         if (max > Config.StartThreshold && pos > 20) {
             return pos - 20;
         }
