@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AsonicTrackerTransmitter</string>
+    <string name="fs_tag">Sampling Frequency</string>
+    <string name="f0_tag">Start Frequency</string>
+    <string name="f1_tag">End Frequency</string>
+    <string name="T_tag">Chirp Duration</string>
+    <string name="chirp_num">Chirp Number</string>
+    <string name="play_btn">Play</string>
+    <string name="draw_btn">Draw</string>
+</resources>
