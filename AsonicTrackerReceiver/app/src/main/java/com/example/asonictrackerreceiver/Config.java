@@ -1,7 +1,7 @@
 package com.example.asonictrackerreceiver;
 
 public class Config {
-    public static final int SamplingRate = 48000;
+    public static final int SamplingRate = 44100;
     public static final int StartFreqA = 17000;
     public static final int EndFreqA = 19000;
     public static final int StartFreqB = 14000;

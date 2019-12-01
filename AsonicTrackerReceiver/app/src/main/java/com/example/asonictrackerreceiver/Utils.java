@@ -25,21 +25,52 @@ public class Utils {
         return xcorr_result;
     }
 
-    public static int findStart(double[] input) {
+//    public static int findStart(double[] input) {
+//        double[] t = new double[Config.SampleNum];
+//        for (int i = 0; i < Config.SampleNum; i++) t[i] = ((double)i / Config.SamplingRate);
+//        double[] chirp = Utils.chirp(t, Config.StartFreq, Config.T, Config.EndFreq);
+//
+//        double[] xcorr_result = xcorr(input, chirp);
+//
+//        double max = 0;
+//        for (double d: xcorr_result) if (d > max) max = d;
+//
+//        // Log.i("XCORR", String.format("max corr is: %.3f", max));
+//
+//        for (int i = 0; i < xcorr_result.length; ++i) {
+//            if (xcorr_result[i] > Config.StartThreshold) return i;
+//        }
+//        return -1;
+//    }
+//
+    public static int findStart(double[] input, int startFreq, int endFreq) {
         double[] t = new double[Config.SampleNum];
         for (int i = 0; i < Config.SampleNum; i++) t[i] = ((double)i / Config.SamplingRate);
-        double[] chirp = Utils.chirp(t, Config.StartFreq, Config.T, Config.EndFreq);
+        double[] chirp = Utils.chirp(t, startFreq, Config.T, endFreq);
 
         double[] xcorr_result = xcorr(input, chirp);
 
         double max = 0;
-        for (double d: xcorr_result) if (d > max) max = d;
+//        for (double d: xcorr_result) if (d > max) max = d;
+//
+//        // Log.i("XCORR", String.format("max corr is: %.3f", max));
+//
+//        for (int i = 0; i < xcorr_result.length; ++i) {
+//            if (xcorr_result[i] > Config.StartThreshold) return i;
+//        }
 
-        // Log.i("XCORR", String.format("max corr is: %.3f", max));
-        
+        int pos = -1;
         for (int i = 0; i < xcorr_result.length; ++i) {
-            if (xcorr_result[i] > Config.StartThreshold) return i;
+            if (xcorr_result[i] > max) {
+                max = xcorr_result[i];
+                pos = i;
+            }
         }
+        Log.i("XCORR", String.format("max corr is: %.3f, position is: %d", max, pos));
+        if (max > Config.StartThreshold && pos > 20) {
+            return pos - 20;
+        }
+
         return -1;
     }
 

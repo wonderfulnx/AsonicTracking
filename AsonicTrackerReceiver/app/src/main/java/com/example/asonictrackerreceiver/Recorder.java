@@ -66,79 +66,82 @@ public class Recorder extends Thread {
                     double[] receive_b = bandPassFilterB.filter(audio);
                     int start_pos_a = -1;
                     int start_pos_b = -1;
-//                    if (aligned) start_pos = 2 * Config.SampleNum - last_tail;
-//                    else {
-//                        start_pos = Utils.findStart(receive);
-//                        if (start_pos >= 0) aligned = true;
-//                    }
-                    if (aligned_a && aligned_b) {
-                        start_pos_a = 2 * Config.SampleNum - last_tail_a;
-                        start_pos_b = 2 * Config.SampleNum - last_tail_b;
-                    } else if (aligned_a) {
-                        start_pos_b = Utils.findStart(receive_b);
-                        if (start_pos_b >= 0) aligned_b = true;
-                        if (start_pos_a >= 0) {
-                            while (start_pos_a + Config.SampleNum * 2 <= receive_a.length) {
-                                start_pos_a += Config.SampleNum * 2;
-                            }
-                            last_tail_a = receive_a.length - start_pos_a;
-                        }
-                    } else if (aligned_b) {
-                        start_pos_a = Utils.findStart(receive_a);
+                    if (aligned_a) start_pos_a = 2 * Config.SampleNum - last_tail_a;
+                    else {
+                        start_pos_a = Utils.findStart(receive_a, Config.StartFreqA, Config.EndFreqA);
                         if (start_pos_a >= 0) aligned_a = true;
-                        if (start_pos_b >= 0) {
-                            while (start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
-                                start_pos_b += Config.SampleNum * 2;
-                            }
-                            last_tail_b = receive_b.length - start_pos_b;
-                        }
-                    } else {
-                        start_pos_a = Utils.findStart(receive_a);
-                        if (start_pos_a >= 0) aligned_a = true;
-                        start_pos_b = Utils.findStart(receive_b);
-                        if (start_pos_b >= 0) aligned_b = true;
                     }
-
-                    if (start_pos_a >= 0 && start_pos_b >= 0) {
-                        while (start_pos_a + Config.SampleNum * 2 <= receive_a.length && start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
-                            double dis_a = fmcwA.delta_dis(receive_a, start_pos_a);
-                            double dis_b = fmcwB.delta_dis(receive_b, start_pos_b);
-                            double x = (Config.SpeakerDist * Config.SpeakerDist + dis_a * dis_a - dis_b * dis_b) / (2 * Config.SpeakerDist);
-                            double y = Math.sqrt(dis_a * dis_a - x * x);
-
-                            callBack.solve_position(x, y);
-
-                            start_pos_a += Config.SampleNum * 2;
-                            start_pos_b += Config.SampleNum * 2;
-                        }
-
-                        while (start_pos_a + Config.SampleNum * 2 <= receive_a.length) {
-                            start_pos_a += Config.SampleNum * 2;
-                        }
-
-                        while (start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
-                            start_pos_b += Config.SampleNum * 2;
-                        }
-
-                        last_tail_a = receive_a.length - start_pos_a;
-                        last_tail_b = receive_b.length - start_pos_b;
-                        read_cnt++;
-                    }
-
-//                    if (start_pos >= 0) {
-//                        // Log.i("START_POS", String.format("last tail is: %d, new start is: %d", last_tail, start_pos));
-//                        // boolean caled = false;
-//                        while (start_pos + Config.SampleNum * 2 <= receive.length) {
-//                            // if (!caled) {
-//                            double dis = fmcwA.delta_dis(receive, start_pos);
-//                            callBack.solve_distance(dis);
-//                            // caled = true;
-//                            //}
-//                            start_pos += Config.SampleNum * 2;
+//                    if (aligned_a && aligned_b) {
+//                        Log.i("START_POS", "A, B are aligned");
+//                        start_pos_a = 2 * Config.SampleNum - last_tail_a;
+//                        start_pos_b = 2 * Config.SampleNum - last_tail_b;
+//                    } else if (aligned_a) {
+//                        Log.i("START_POS", "A is aligned");
+//                        start_pos_b = Utils.findStart(receive_b, Config.StartFreqB, Config.EndFreqB);
+//                        if (start_pos_b >= 0) aligned_b = true;
+//                        if (start_pos_a >= 0) {
+//                            while (start_pos_a + Config.SampleNum * 2 <= receive_a.length) {
+//                                start_pos_a += Config.SampleNum * 2;
+//                            }
+//                            last_tail_a = receive_a.length - start_pos_a;
 //                        }
-//                        last_tail = receive.length - start_pos;
+//                    } else if (aligned_b) {
+//                        Log.i("START_POS", "B is aligned");
+//                        start_pos_a = Utils.findStart(receive_a, Config.StartFreqA, Config.EndFreqA);
+//                        if (start_pos_a >= 0) aligned_a = true;
+//                        if (start_pos_b >= 0) {
+//                            while (start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
+//                                start_pos_b += Config.SampleNum * 2;
+//                            }
+//                            last_tail_b = receive_b.length - start_pos_b;
+//                        }
+//                    } else {
+//                        start_pos_a = Utils.findStart(receive_a, Config.StartFreqA, Config.EndFreqA);
+//                        if (start_pos_a >= 0) aligned_a = true;
+//                        start_pos_b = Utils.findStart(receive_b, Config.StartFreqB, Config.EndFreqB);
+//                        if (start_pos_b >= 0) aligned_b = true;
+//                    }
+//
+//                    if (start_pos_a >= 0 && start_pos_b >= 0) {
+//                        while (start_pos_a + Config.SampleNum * 2 <= receive_a.length && start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
+//                            double dis_a = fmcwA.delta_dis(receive_a, start_pos_a);
+//                            double dis_b = fmcwB.delta_dis(receive_b, start_pos_b);
+//                            double x = (Config.SpeakerDist * Config.SpeakerDist + dis_a * dis_a - dis_b * dis_b) / (2 * Config.SpeakerDist);
+//                            double y = Math.sqrt(dis_a * dis_a - x * x);
+//
+//                            callBack.solve_position(x, y);
+//
+//                            start_pos_a += Config.SampleNum * 2;
+//                            start_pos_b += Config.SampleNum * 2;
+//                        }
+//
+//                        while (start_pos_a + Config.SampleNum * 2 <= receive_a.length) {
+//                            start_pos_a += Config.SampleNum * 2;
+//                        }
+//
+//                        while (start_pos_b + Config.SampleNum * 2 <= receive_b.length) {
+//                            start_pos_b += Config.SampleNum * 2;
+//                        }
+//
+//                        last_tail_a = receive_a.length - start_pos_a;
+//                        last_tail_b = receive_b.length - start_pos_b;
 //                        read_cnt++;
 //                    }
+
+                    if (start_pos_a >= 0) {
+                        // Log.i("START_POS", String.format("last tail is: %d, new start is: %d", last_tail, start_pos));
+                        // boolean caled = false;
+                        while (start_pos_a + Config.SampleNum * 2 <= receive_a.length) {
+                            // if (!caled) {
+                            double dis = fmcwA.delta_dis(receive_a, start_pos_a);
+                            callBack.solve_distance(dis);
+                            // caled = true;
+                            //}
+                            start_pos_a += Config.SampleNum * 2;
+                        }
+                        last_tail_a = receive_a.length - start_pos_a;
+                        read_cnt++;
+                    }
                 }
             }
             audioRecord.stop();
