@@ -10,10 +10,14 @@ public class LoopPlayer extends Thread{
     private int fs;
     private double[] audio;
     private AudioTrack audioTrack;
+    private boolean left_gain;
+    private boolean right_gain;
 
-    public LoopPlayer(int sample_freq, double[] signal) {
+    public LoopPlayer(int sample_freq, double[] signal, boolean left, boolean right) {
         fs = sample_freq;
         audio = signal;
+        left_gain = left;
+        right_gain = right;
     }
 
     @Override
@@ -28,6 +32,7 @@ public class LoopPlayer extends Thread{
                 AudioFormat.ENCODING_PCM_16BIT,
                 buff_size,
                 AudioTrack.MODE_STATIC);
+        audioTrack.setStereoVolume()
         audioTrack.write(tx, 0, buff_size);
         // Log.i("LoopPlayer", "rua: " + audioTrack.getBufferSizeInFrames());
         int set_res = audioTrack.setLoopPoints(0, buff_size / 2, -1);

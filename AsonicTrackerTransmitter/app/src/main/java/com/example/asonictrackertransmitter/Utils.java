@@ -88,8 +88,8 @@ public class Utils {
         out.write(header, 0, 44);
     }
 
-    public static void writeMessage(double[] Tx_data, long SampleRate) {
-        File file = new File(messageFilePath);
+    public static void writeMessage(double[] Tx_data, long SampleRate, String leftOrRight) {
+        File file = new File(messageFilePath + leftOrRight);
         if (file.exists()) file.delete();
         try { file.createNewFile(); } catch (IOException e){
             throw new IllegalStateException("unable to create " + file.toString());
