@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements CallBack {
     private Button start_btn;
     private EditText editText;
     private Recorder recorder;
+    private TrackView trackView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements CallBack {
                 }
             }
         });
+
+        this.trackView = findViewById(R.id.trackView);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements CallBack {
     @Override
     public void solve_position(double x, double y) {
         logToDisplay(String.format("distance to a:%.3f, to b:%.3f m", x, y));
+        draw((float)x * 300, (float)y * 300);
     }
 
     private void logToDisplay(final String msg) {
@@ -96,7 +100,15 @@ public class MainActivity extends AppCompatActivity implements CallBack {
             @Override
             public void run() {
                 MainActivity.this.editText.append(msg + "\n");
-//                MainActivity.this.editText.setText(msg);
+            }
+        });
+    }
+
+    private void draw(final float x, final float y) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.this.trackView.drawPath(x, y);
             }
         });
     }
