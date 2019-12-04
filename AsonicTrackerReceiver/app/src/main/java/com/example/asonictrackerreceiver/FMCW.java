@@ -9,6 +9,7 @@ public class FMCW {
     private double[] pseudo_T;
     private int fft_len = Config.FMCW_FFTLen;
     private int c = Config.SoundSpeed;
+    private double gamma;
 
     public FMCW(int sample_freq, double chirp_T, int start_freq, int end_freq) {
         fs = sample_freq;
@@ -19,6 +20,7 @@ public class FMCW {
         double[] t = new double[sample_num];
         for (int i = 0; i < sample_num; i++) t[i] = i * ((double)1 / fs);
         pseudo_T = Utils.chirp(t, f0, T, f1);
+        gamma = c * fs * T / (f1 - f0) / fft_len;
     }
 
     public double delta_dis(double[] input) {
@@ -60,6 +62,8 @@ public class FMCW {
                 max_ind = i;
             }
         }
-        return max_ind * c * fs * T / (f1 - f0) / fft_len;
+//        return max_ind * gamma;
+        return max_ind * ((double)fs / fft_len) * T * c / (f1 - f0);
     }
+
 }

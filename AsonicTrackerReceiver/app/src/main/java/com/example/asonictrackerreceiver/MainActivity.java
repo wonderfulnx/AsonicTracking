@@ -6,18 +6,24 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.view.View;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity implements CallBack {
     protected static final String TAG = "MainActivity";
     private Button start_btn;
+    private Button cali_btn;
     private EditText editText;
     private Recorder recorder;
     private TrackView trackView;
+    private Random r = new Random();
+    private boolean canDraw = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,17 @@ public class MainActivity extends AppCompatActivity implements CallBack {
             }
         });
 
+        this.cali_btn = findViewById(R.id.cali_btn);
+        this.cali_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (MainActivity.this.recorder.recording) {
+                    MainActivity.this.recorder.doCalibration = true;
+                    MainActivity.this.canDraw = true;
+                }
+            }
+        });
+
         this.trackView = findViewById(R.id.trackView);
     }
 
@@ -90,9 +107,12 @@ public class MainActivity extends AppCompatActivity implements CallBack {
     }
 
     @Override
-    public void solve_position(double x, double y) {
-        logToDisplay(String.format("distance to a:%.3f, to b:%.3f m", x, y));
-        draw((float)x * 300, (float)y * 300);
+    public void solve_position(double dis_a, double dis_b, double x, double y) {
+        logToDisplay(String.format("distance to a:%.2f, to b:%.2f m\nx: %.2f, y:%.2f", dis_a, dis_b, x, y));
+        if (!Double.isNaN(y) && canDraw) {
+            Log.i("is Not Nan", String.format("y:%f", y));
+            this.draw((float)x, (float)y);
+        }
     }
 
     private void logToDisplay(final String msg) {
